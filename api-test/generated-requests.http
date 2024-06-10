@@ -1,0 +1,9 @@
+###
+POST http://{{content_host}}/course/list?pageNo=1&pageSize=10
+Content-Type: application/json
+{
+  "publishStatus": "203001"
+}
+
+<> 2024-06-10T210611.400.html
+
