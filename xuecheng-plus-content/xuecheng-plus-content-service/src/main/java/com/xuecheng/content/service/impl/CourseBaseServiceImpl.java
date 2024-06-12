@@ -6,14 +6,23 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xuecheng.base.model.PageParams;
 import com.xuecheng.base.model.PageResult;
 import com.xuecheng.content.mapper.CourseBaseMapper;
+import com.xuecheng.content.mapper.CourseCategoryMapper;
+import com.xuecheng.content.mapper.CourseMarketMapper;
+import com.xuecheng.content.model.dto.AddCourseDto;
+import com.xuecheng.content.model.dto.CourseBaseInfoDto;
 import com.xuecheng.content.model.dto.QueryCourseParamsDto;
 import com.xuecheng.content.model.po.CourseBase;
+import com.xuecheng.content.model.po.CourseCategory;
+import com.xuecheng.content.model.po.CourseMarket;
 import com.xuecheng.content.service.CourseBaseService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -28,6 +37,10 @@ import java.util.List;
 public class CourseBaseServiceImpl extends ServiceImpl<CourseBaseMapper, CourseBase> implements CourseBaseService {
     @Autowired
     CourseBaseMapper courseBaseMapper;
+    @Autowired
+    CourseMarketMapper courseMarketMapper;
+    @Autowired
+    CourseCategoryMapper courseCategoryMapper;
 
     @Override
     public PageResult<CourseBase> queryCourseBaseList(PageParams pageParams, QueryCourseParamsDto queryCourseParams) {
@@ -50,5 +63,85 @@ public class CourseBaseServiceImpl extends ServiceImpl<CourseBaseMapper, CourseB
         //封装结果集
         PageResult<CourseBase> PageResult = new PageResult<>(pageRecords,total,pageParams.getPageNo(),pageParams.getPageSize());
         return PageResult;
+    }
+    @Transactional
+    @Override
+    public CourseBaseInfoDto addCourseBase(Long companyId, AddCourseDto addCourseDto) {
+        //参数校验
+        if (StringUtils.isBlank(addCourseDto.getName())) {
+            throw new RuntimeException("课程名称为空");
+        }
+
+        if (StringUtils.isBlank(addCourseDto.getMt())) {
+            throw new RuntimeException("课程分类为空");
+        }
+
+        if (StringUtils.isBlank(addCourseDto.getSt())) {
+            throw new RuntimeException("课程分类为空");
+        }
+
+        if (StringUtils.isBlank(addCourseDto.getGrade())) {
+            throw new RuntimeException("课程等级为空");
+        }
+
+        if (StringUtils.isBlank(addCourseDto.getTeachmode())) {
+            throw new RuntimeException("教育模式为空");
+        }
+
+        if (StringUtils.isBlank(addCourseDto.getUsers())) {
+            throw new RuntimeException("适应人群为空");
+        }
+
+        if (StringUtils.isBlank(addCourseDto.getCharge())) {
+            throw new RuntimeException("收费规则为空");
+        }
+        //新增对象
+        CourseBase courseBase = new CourseBase();
+        BeanUtils.copyProperties(addCourseDto, courseBase);
+        courseBase.setStatus("203001");
+        courseBase.setAuditStatus(("202002"));
+        //设置公司id
+        courseBase.setCompanyId(companyId);
+        //添加时间
+        courseBase.setCreateDate(LocalDateTime.now());
+        int insert = courseBaseMapper.insert(courseBase);
+        Long courseId = courseBase.getId();
+        //课程营销信息
+        CourseMarket courseMarket = new CourseMarket();
+        BeanUtils.copyProperties(addCourseDto, courseMarket);
+        courseMarket.setId(courseId);
+        //收费的话价格必须>0
+        Float price = addCourseDto.getPrice();
+        if(addCourseDto.getCharge().equals("201001")){
+            if(price.floatValue()<=0||price==null){
+                throw new RuntimeException("课程设置了收费价格不能为空且必须大于0");
+            }
+        }
+        int insert1 = courseMarketMapper.insert(courseMarket);
+        if(insert<0||insert1<0){
+            throw new RuntimeException("新增课程基本信息失败");
+        }
+        //添加成功
+        //返回添加的课程信息
+        return getCourseBaseInfo(courseId);
+    }
+
+    private CourseBaseInfoDto getCourseBaseInfo(Long courseId) {
+        CourseBase courseBase = courseBaseMapper.selectById(courseId);
+        CourseMarket courseMarket = courseMarketMapper.selectById(courseId);
+        if(courseBase==null){
+            return null;
+        }
+        CourseBaseInfoDto courseBaseInfoDto = new CourseBaseInfoDto();
+        BeanUtils.copyProperties(courseBase, courseBaseInfoDto);
+        if(courseMarket!=null){
+            BeanUtils.copyProperties(courseMarket, courseBaseInfoDto);
+        }
+        //查询课程分类名称
+        CourseCategory courseCategoryByMt = courseCategoryMapper.selectById(courseBase.getMt());
+        courseBaseInfoDto.setMtName(courseCategoryByMt.getName());
+        CourseCategory courseCategoryBySt = courseCategoryMapper.selectById(courseBase.getSt());
+        courseBaseInfoDto.setStName(courseCategoryBySt.getName());
+        return courseBaseInfoDto;
     }
 }
