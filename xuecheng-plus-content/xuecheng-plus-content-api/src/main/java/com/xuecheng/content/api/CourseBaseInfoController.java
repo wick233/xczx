@@ -1,18 +1,19 @@
 package com.xuecheng.content.api;
 
+import com.xuecheng.base.exception.ValidationGroups;
 import com.xuecheng.base.model.PageParams;
 import com.xuecheng.base.model.PageResult;
 import com.xuecheng.content.model.dto.AddCourseDto;
 import com.xuecheng.content.model.dto.CourseBaseInfoDto;
+import com.xuecheng.content.model.dto.EditCourseDto;
 import com.xuecheng.content.model.dto.QueryCourseParamsDto;
 import com.xuecheng.content.model.po.CourseBase;
 import com.xuecheng.content.service.CourseBaseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @description 课程信息编辑接口
@@ -35,8 +36,22 @@ public class CourseBaseInfoController {
 
     @ApiOperation("新增课程基础信息")
     @PostMapping("/course")
-    public CourseBaseInfoDto createCourseBase(@RequestBody AddCourseDto addCourseDto){
+    public CourseBaseInfoDto createCourseBase(@RequestBody @Validated({ValidationGroups.Inster.class}) AddCourseDto addCourseDto){
         CourseBaseInfoDto courseBaseInfoDto = courseBaseService.addCourseBase(1L,addCourseDto);
+        return courseBaseInfoDto;
+    }
+
+    @ApiOperation("根据id查询课程基础信息")
+    @GetMapping("/course/{courseId}")
+    public CourseBaseInfoDto getCourseBaseInfo(@PathVariable("courseId") Long courseId){
+        CourseBaseInfoDto courseBaseInfoDto = courseBaseService.getCourseBaseInfoById(courseId);
+        return courseBaseInfoDto;
+    }
+
+    @ApiOperation("修改课程基础信息")
+    @PutMapping("/course")
+    public CourseBaseInfoDto editCourseBase(Long companyId, @RequestBody EditCourseDto editCourseDto){
+        CourseBaseInfoDto courseBaseInfoDto = courseBaseService.updateCourseBase(1L,editCourseDto);
         return courseBaseInfoDto;
     }
 
