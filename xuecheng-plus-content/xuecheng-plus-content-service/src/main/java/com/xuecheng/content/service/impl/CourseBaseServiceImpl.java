@@ -166,7 +166,7 @@ public class CourseBaseServiceImpl extends ServiceImpl<CourseBaseMapper, CourseB
         dto.setStName(courseCategoryMapper.selectById(courseBase.getSt()).getName());
         return dto;
     }
-
+    @Transactional
     @Override
     public CourseBaseInfoDto updateCourseBase(long companyId, EditCourseDto editCourseDto) {
         Long id = editCourseDto.getId();
