@@ -37,7 +37,7 @@ public class CourseBaseInfoController {
     @ApiOperation("新增课程基础信息")
     @PostMapping("/course")
     public CourseBaseInfoDto createCourseBase(@RequestBody @Validated({ValidationGroups.Inster.class}) AddCourseDto addCourseDto){
-        CourseBaseInfoDto courseBaseInfoDto = courseBaseService.addCourseBase(1L,addCourseDto);
+        CourseBaseInfoDto courseBaseInfoDto = courseBaseService.addCourseBase(1232141425L,addCourseDto);
         return courseBaseInfoDto;
     }
 
@@ -51,7 +51,7 @@ public class CourseBaseInfoController {
     @ApiOperation("修改课程基础信息")
     @PutMapping("/course")
     public CourseBaseInfoDto editCourseBase(Long companyId, @RequestBody EditCourseDto editCourseDto){
-        CourseBaseInfoDto courseBaseInfoDto = courseBaseService.updateCourseBase(1L,editCourseDto);
+        CourseBaseInfoDto courseBaseInfoDto = courseBaseService.updateCourseBase(1232141425L,editCourseDto);
         return courseBaseInfoDto;
     }
 
