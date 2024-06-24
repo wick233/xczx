@@ -1,5 +1,5 @@
 ###
-POST {{content_host}}/course/list?pageNo=1&pageSize=10
+POST {{content_host}}/content/course/list?pageNo=1&pageSize=10
 Content-Type: application/json
 {
   "publishStatus": "203001"
@@ -30,7 +30,7 @@ Content-Type: application/json
 }
 
 ### 根据课程id查询课程信息
-GET {{content_host}}/content/content/course/40
+GET {{content_host}}/content/course/40
 Content-Type: application/json
 
 
@@ -81,5 +81,13 @@ Content-Type: application/json
 #  "charge": "201001",
 #  "price": 0.01
 #}
+
+
+### 课程查询列表
+GET {{gateway_host}}/content/course-category/tree-nodes
+Content-Type: application/json
+
+
+
 <> 2024-06-10T210611.400.html
 
