@@ -3,6 +3,8 @@ package com.xuecheng.media.service;
 import com.xuecheng.base.model.PageParams;
 import com.xuecheng.base.model.PageResult;
 import com.xuecheng.media.model.dto.QueryMediaParamsDto;
+import com.xuecheng.media.model.dto.UploadFileParamsDto;
+import com.xuecheng.media.model.dto.UploadFileResultDto;
 import com.xuecheng.media.model.po.MediaFiles;
 
 /**
@@ -22,6 +24,16 @@ public interface MediaFileService {
   * @date 2022/9/10 8:57
  */
  public PageResult<MediaFiles> queryMediaFiels(Long companyId,PageParams pageParams, QueryMediaParamsDto queryMediaParamsDto);
+
+ /**
+  * @description 上传文件
+  * @param uploadFileParamsDto  上传文件信息
+  * @param folder  文件目录,如果不传则默认年、月、日
+  * @return com.xuecheng.media.model.dto.UploadFileResultDto 上传文件结果
+  * @author Mr.M
+  * @date 2022/9/12 19:31
+  */
+ public UploadFileResultDto uploadFile(Long companyId, UploadFileParamsDto uploadFileParamsDto, byte[] bytes, String folder, String objectName);
 
 
 }

@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * ClassName: MinIOTest
@@ -63,7 +65,9 @@ public class MinIOTest {
     public static void main(String[] args)throws IOException, NoSuchAlgorithmException, InvalidKeyException {
 //        upload();
 //        delete("testbucket","1.mp4");
-        getFile("testbucket","1.mp4","D:\\666.mp4");
+//        getFile("testbucket","1.mp4","D:\\666.mp4");
+//        getFileFolder();
+        getFileFolderOrigin(new Date(), true, true, true);
     }
 
 
@@ -106,6 +110,39 @@ public class MinIOTest {
             System.out.println("HTTP trace: " + e.httpTrace());
         }
 
+    }
+
+
+    public static String getFileFolder() {
+        Date date = new Date();
+        //根据日期拼接目录
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+        //获取当前日期字符串
+        String dateStr = sdf.format(new Date());
+        System.out.println(dateStr);
+        return dateStr;
+    }
+
+    private static String getFileFolderOrigin(Date date, boolean year, boolean month, boolean day) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        //获取当前日期字符串
+        String dateString = sdf.format(new Date());
+        //取出年、月、日
+        String[] dateStringArray = dateString.split("-");
+        StringBuffer folderString = new StringBuffer();
+        if (year) {
+            folderString.append(dateStringArray[0]);
+            folderString.append("/");
+        }
+        if (month) {
+            folderString.append(dateStringArray[1]);
+            folderString.append("/");
+        }
+        if (day) {
+            folderString.append(dateStringArray[2]);
+            folderString.append("/");
+        }
+        return folderString.toString();
     }
 
 
