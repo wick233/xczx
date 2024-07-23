@@ -43,5 +43,7 @@ public interface MediaFileService {
 
  RestResponse uploadChunk(String fileMd5, int chunk, byte[] bytes);
 
- RestResponse mergeChunks(String fileMd5, String fileName, int chunkTotal);
+ RestResponse mergeChunks(String fileMd5, String fileName, int chunkTotal, UploadFileParamsDto uploadFileParamsDto);
+
+ MediaFiles addMediaFilesToDb(Long companyId, String fileMd5, UploadFileParamsDto uploadFileParamsDto, String bucket_videoFiles, String mergeFilePath);
 }
