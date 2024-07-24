@@ -9,10 +9,12 @@ import com.xuecheng.base.model.PageParams;
 import com.xuecheng.base.model.PageResult;
 import com.xuecheng.base.model.RestResponse;
 import com.xuecheng.media.mapper.MediaFilesMapper;
+import com.xuecheng.media.mapper.MediaProcessMapper;
 import com.xuecheng.media.model.dto.QueryMediaParamsDto;
 import com.xuecheng.media.model.dto.UploadFileParamsDto;
 import com.xuecheng.media.model.dto.UploadFileResultDto;
 import com.xuecheng.media.model.po.MediaFiles;
+import com.xuecheng.media.model.po.MediaProcess;
 import com.xuecheng.media.service.MediaFileService;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
@@ -61,6 +63,9 @@ public class MediaFileServiceImpl implements MediaFileService {
     @Autowired
     MediaFileService currentProxy;
 
+    @Autowired
+    MediaProcessMapper mediaProcessMapper;
+
 
 
 
@@ -78,6 +83,7 @@ public class MediaFileServiceImpl implements MediaFileService {
 //        }
         //分页对象
         Page<MediaFiles> page = new Page<>(pageParams.getPageNo(), pageParams.getPageSize());
+        queryWrapper.orderByDesc(MediaFiles::getCreateDate);
         // 查询数据内容获得结果
         Page<MediaFiles> pageResult = mediaFilesMapper.selectPage(page, queryWrapper);
         // 获取数据列表
@@ -222,6 +228,15 @@ public class MediaFileServiceImpl implements MediaFileService {
      */
     public MediaFiles addMediaFilesToDb(Long companyId,String fileMd5,UploadFileParamsDto uploadFileParamsDto,String bucket,String objectName){
 
+        //根据文件名称取出媒体类型
+        //扩展名
+        String extension = null;
+        if (objectName.indexOf(".") >= 0) {
+            extension = objectName.substring(objectName.lastIndexOf("."));
+        }
+        //获取扩展名对应的媒体类型
+        String contentType = getMimeTypeByExtension(extension);
+
         //从数据库查询文件
         MediaFiles mediaFiles = mediaFilesMapper.selectById(fileMd5);
         if (mediaFiles == null) {
@@ -231,7 +246,10 @@ public class MediaFileServiceImpl implements MediaFileService {
             mediaFiles.setId(fileMd5);
             mediaFiles.setFileId(fileMd5);
             mediaFiles.setCompanyId(companyId);
-            mediaFiles.setUrl("/" + bucket + "/" + objectName);
+            //图片及mp4文件设置url
+            if(contentType.indexOf("image")>0 || contentType.indexOf("video")>0){
+                mediaFiles.setUrl("/" + bucket + "/" + objectName);
+            }
             mediaFiles.setBucket(bucket);
             mediaFiles.setFilePath(objectName);
             mediaFiles.setCreateDate(LocalDateTime.now());
@@ -242,6 +260,14 @@ public class MediaFileServiceImpl implements MediaFileService {
             if (insert < 0) {
                 XueChengPlusException.cast("保存文件信息失败");
             }
+            //如果是avi视频添加到视频待处理表
+            if(contentType.equals("video/x-msvideo")){
+                MediaProcess mediaProcess = new MediaProcess();
+                BeanUtils.copyProperties(mediaFiles,mediaProcess);
+                mediaProcess.setStatus("1");//未处理
+                mediaProcessMapper.insert(mediaProcess);
+            }
+
 
         }
         return mediaFiles;
@@ -529,5 +555,9 @@ public class MediaFileServiceImpl implements MediaFileService {
         }
     }
 
-
+    @Override
+    public MediaFiles getPlayUrlByMediaId(String mediaId) {
+        MediaFiles mediaFiles = mediaFilesMapper.selectById(mediaId);
+        return mediaFiles;
+    }
 }
