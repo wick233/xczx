@@ -67,7 +67,8 @@ public class MinIOTest {
 //        delete("testbucket","1.mp4");
 //        getFile("testbucket","1.mp4","D:\\666.mp4");
 //        getFileFolder();
-        getFileFolderOrigin(new Date(), true, true, true);
+//        getFileFolderOrigin(new Date(), true, true, true);
+        getFile("video","1.mp4","D:\\666.mp4");
     }
 
 

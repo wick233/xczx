@@ -8,6 +8,8 @@ import com.xuecheng.media.model.dto.UploadFileParamsDto;
 import com.xuecheng.media.model.dto.UploadFileResultDto;
 import com.xuecheng.media.model.po.MediaFiles;
 
+import java.io.File;
+
 /**
  * @description 媒资文件管理业务类
  * @author Mr.M
@@ -48,4 +50,8 @@ public interface MediaFileService {
  MediaFiles addMediaFilesToDb(Long companyId, String fileMd5, UploadFileParamsDto uploadFileParamsDto, String bucket_videoFiles, String mergeFilePath);
 
  MediaFiles getPlayUrlByMediaId(String mediaId);
+
+ void addMediaFilesToMinIO(String absolutePath, String bucket, String objectName);
+
+ File downloadFileFromMinIO(File originalFile, String bucket, String filePath);
 }

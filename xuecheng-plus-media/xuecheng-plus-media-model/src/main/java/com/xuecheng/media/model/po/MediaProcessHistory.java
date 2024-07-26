@@ -52,6 +52,7 @@ public class MediaProcessHistory implements Serializable {
     /**
      * 完成时间
      */
+    @TableField(value = "finish_date", fill = FieldFill.INSERT)
     private LocalDateTime finishDate;
 
     /**
@@ -59,5 +60,15 @@ public class MediaProcessHistory implements Serializable {
      */
     private String url;
 
+    /**
+     * 失败原因
+     */
+    @TableField(value = "errormsg")
+    private String errorMsg;
+
+    /**
+     * 存储路径
+     */
+    private String filePath;
 
 }

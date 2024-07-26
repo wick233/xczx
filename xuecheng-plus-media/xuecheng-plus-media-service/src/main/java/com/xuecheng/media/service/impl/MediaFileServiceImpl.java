@@ -490,7 +490,7 @@ public class MediaFileServiceImpl implements MediaFileService {
     }
 
     //根据桶和文件路径从minio下载文件
-    private File downloadFileFromMinIO(File chunkFile, String bucket_videoFiles, String objectName) {
+    public File downloadFileFromMinIO(File chunkFile, String bucket_videoFiles, String objectName) {
         InputStream fileInputStream = null;
         OutputStream fileOutputStream = null;
         try {
