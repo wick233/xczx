@@ -52,4 +52,23 @@ public class TeachplanController {
     }
 
 
+    //TODO:解除课程计划和媒资信息绑定    小节上移下移
+    @ApiOperation(value = "解除课程计划与媒资信息绑定")
+    @DeleteMapping("/teachplan/association/media/{teachPlanId}/{mediaId}")
+    public void delAssociationMedia(@PathVariable Long teachPlanId, @PathVariable String mediaId) {
+        teachplanService.delAssociationMedia(teachPlanId, mediaId);
+    }
+
+    @ApiOperation("上移课程计划")
+    @PostMapping("/teachplan/moveup/{teachPlanId}")
+    public void moveUpTeachPlan(@PathVariable Long teachPlanId){
+        teachplanService.moveUpTeachPlan(teachPlanId);
+    }
+
+
+    @ApiOperation("下移课程计划")
+    @PostMapping("/teachplan/movedown/{teachPlanId}")
+    public void moveDownTeachPlan(@PathVariable Long teachPlanId){
+        teachplanService.moveDownTeachPlan(teachPlanId);
+    }
 }

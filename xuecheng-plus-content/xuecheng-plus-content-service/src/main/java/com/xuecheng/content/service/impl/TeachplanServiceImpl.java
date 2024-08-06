@@ -12,6 +12,7 @@ import com.xuecheng.content.model.po.Teachplan;
 import com.xuecheng.content.model.po.TeachplanMedia;
 import com.xuecheng.content.service.TeachplanService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -108,5 +109,69 @@ public class TeachplanServiceImpl extends ServiceImpl<TeachplanMapper, Teachplan
         teachplanMedia.setTeachplanId(teachplanId);
         teachplanMediaMapper.insert(teachplanMedia);
         return teachplanMedia;
+    }
+
+    @Override
+    public void delAssociationMedia(Long teachPlanId, String mediaId) {
+        if(StringUtils.isEmpty(String.valueOf(teachPlanId))){
+            XueChengPlusException.cast("教学计划id为空");
+        }
+        if (StringUtils.isEmpty(mediaId)){
+            XueChengPlusException.cast("媒资文件id为空");
+        }
+        int delete = teachplanMediaMapper.delete(new LambdaQueryWrapper<TeachplanMedia>().eq(TeachplanMedia::getTeachplanId, teachPlanId).eq(TeachplanMedia::getMediaId, mediaId));
+        if (delete == 0){
+            XueChengPlusException.cast("删除失败");
+        }else {
+            log.debug("删除成功");
+        }
+    }
+
+    @Override
+    public void moveUpTeachPlan(Long teachPlanId) {
+        if (StringUtils.isEmpty(String.valueOf(teachPlanId))){
+            XueChengPlusException.cast("教学计划id为空");
+        }
+        Teachplan teachplan = teachplanMapper.selectById(teachPlanId);
+        if (teachplan == null){
+            XueChengPlusException.cast("教学计划不存在");
+        }
+        Long courseId = teachplan.getCourseId();
+        Long parentid = teachplan.getParentid();
+        Integer orderby = teachplan.getOrderby();
+        LambdaQueryWrapper<Teachplan> wrapper = new LambdaQueryWrapper<Teachplan>();
+        wrapper.eq(Teachplan::getCourseId, courseId).eq(Teachplan::getParentid, parentid).le(Teachplan::getOrderby, orderby).last("limit 1");
+        Teachplan selectOne = teachplanMapper.selectOne(wrapper);
+        if (selectOne == null){
+            XueChengPlusException.cast("已经是最前面了");
+        }
+        teachplan.setOrderby(selectOne.getOrderby());
+        teachplanMapper.updateById(teachplan);
+        selectOne.setOrderby(orderby);
+        teachplanMapper.updateById(selectOne);
+    }
+
+    @Override
+    public void moveDownTeachPlan(Long teachPlanId) {
+        if (StringUtils.isEmpty(String.valueOf(teachPlanId))){
+            XueChengPlusException.cast("教学计划id为空");
+        }
+        Teachplan teachplan = teachplanMapper.selectById(teachPlanId);
+        if (teachplan == null){
+            XueChengPlusException.cast("教学计划不存在");
+        }
+        Long courseId = teachplan.getCourseId();
+        Long parentid = teachplan.getParentid();
+        Integer orderby = teachplan.getOrderby();
+        LambdaQueryWrapper<Teachplan> wrapper = new LambdaQueryWrapper<Teachplan>();
+        wrapper.eq(Teachplan::getCourseId, courseId).eq(Teachplan::getParentid, parentid).ge(Teachplan::getOrderby, orderby).last("limit 1");
+        Teachplan selectOne = teachplanMapper.selectOne(wrapper);
+        if (selectOne == null){
+            XueChengPlusException.cast("已经是最后面了");
+        }
+        teachplan.setOrderby(selectOne.getOrderby());
+        teachplanMapper.updateById(teachplan);
+        selectOne.setOrderby(orderby);
+        teachplanMapper.updateById(selectOne);
     }
 }
