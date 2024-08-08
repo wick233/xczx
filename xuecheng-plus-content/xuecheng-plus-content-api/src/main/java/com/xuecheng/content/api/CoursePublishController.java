@@ -15,7 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
  *
  * @Author wick
  * @Create 2024/8/8 20:25
- * @Version 1.0
+ * @Version 1.0     ...
  */
 @Controller
 public class CoursePublishController {
