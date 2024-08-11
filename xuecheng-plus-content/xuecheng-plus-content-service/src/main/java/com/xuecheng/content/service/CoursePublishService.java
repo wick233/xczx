@@ -14,4 +14,8 @@ import com.xuecheng.content.model.po.CoursePublish;
  */
 public interface CoursePublishService extends IService<CoursePublish> {
     public CoursePreviewDto getCoursePreviewInfo(Long courseId);
+
+    void commitAudit(Long companyId, Long courseId);
+
+    void publish(long l, Long courseId);
 }
