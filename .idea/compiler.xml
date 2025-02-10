@@ -14,10 +14,10 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$PROJECT_DIR$/../../soft/apache-maven-3.6.3-bin/apache-maven-3.6.3/repository/org/projectlombok/lombok/1.18.8/lombok-1.18.8.jar" />
+          <entry name="$PROJECT_DIR$/../../soft/apache-maven-3.6.3-bin/apache-maven-3.6.3/repository/org/projectlombok/lombok/1.18.8/lombok-1.18.8.jar" />
         </processorPath>
         <module name="xuecheng-plus-message-sdk" />
         <module name="xuecheng-plus-media-api" />
-        <module name="xuecheng-plus-content-service" />
         <module name="xuecheng-plus-media-service" />
         <module name="xuecheng-plus-content-model" />
         <module name="xuecheng-plus-generator" />
@@ -29,25 +29,15 @@
         <module name="xuecheng-plus-system-api" />
         <module name="xuecheng-plus-content-api" />
       </profile>
+      <profile name="Annotation profile for xuecheng-plus-content-service" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$PROJECT_DIR$/../../soft/apache-maven-3.6.3-bin/apache-maven-3.6.3/repository/org/projectlombok/lombok/1.18.8/lombok-1.18.8.jar" />
+        </processorPath>
+        <module name="xuecheng-plus-content-service" />
+      </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="xuecheng-plus-base" target="1.8" />
-      <module name="xuecheng-plus-content" target="1.8" />
-      <module name="xuecheng-plus-content-api" target="1.8" />
-      <module name="xuecheng-plus-content-model" target="1.8" />
-      <module name="xuecheng-plus-content-service" target="1.8" />
-      <module name="xuecheng-plus-gateway" target="1.8" />
-      <module name="xuecheng-plus-generator" target="1.8" />
-      <module name="xuecheng-plus-media" target="1.8" />
-      <module name="xuecheng-plus-media-api" target="1.8" />
-      <module name="xuecheng-plus-media-model" target="1.8" />
-      <module name="xuecheng-plus-media-service" target="1.8" />
-      <module name="xuecheng-plus-message-sdk" target="1.8" />
-      <module name="xuecheng-plus-parent" target="1.8" />
-      <module name="xuecheng-plus-system" target="1.8" />
-      <module name="xuecheng-plus-system-api" target="1.8" />
-      <module name="xuecheng-plus-system-model" target="1.8" />
-      <module name="xuecheng-plus-system-service" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>

@@ -1,12 +1,17 @@
 package com.xuecheng.content.service.jobhandler;
 
+import com.xuecheng.base.exception.XueChengPlusException;
+import com.xuecheng.content.service.CoursePublishService;
 import com.xuecheng.messagesdk.model.po.MqMessage;
 import com.xuecheng.messagesdk.service.MessageProcessAbstract;
 import com.xuecheng.messagesdk.service.MqMessageService;
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
 
 /**
  * ClassName: CoursePublishTask
@@ -20,6 +25,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class CoursePublishTask extends MessageProcessAbstract {
+
+    @Autowired
+    CoursePublishService coursePublishService;
 
     @XxlJob("CoursePublishJobHandler")
     public void coursePublishJobHandler() throws Exception {
@@ -49,14 +57,21 @@ public class CoursePublishTask extends MessageProcessAbstract {
         Long id = mqMessage.getId();
         MqMessageService mqMessageService = this.getMqMessageService();
         //消息幂等性处理
-        int i = mqMessageService.getStageThree(id);
-        if (i>0){
-            log.debug("elasticsearch索引完成,课程id:{}",courseId);
-            return;
+        int stageTwo = mqMessageService.getStageTwo(id);
+        if(stageTwo == 2){
+            log.debug("课程索引已处理直接返回，课程id:{}",courseId);
+            return ;
         }
+
+        Boolean result = coursePublishService.saveCourseIndex(courseId);
+        if(result){
+            //保存第一阶段状态
+            mqMessageService.completedStageTwo(id);
+        }
+
         //开始进行redis缓存
         //任务处理完成更新任务状态
-        mqMessageService.completedStageThree(id);
+//        mqMessageService.completedStageThree(id);
     }
 
     private void saveCourseCache(MqMessage mqMessage, Long courseId) {
@@ -87,7 +102,12 @@ public class CoursePublishTask extends MessageProcessAbstract {
             return;
         }
         //开始进行课程静态化
-         int error = 1/0;
+        File file = coursePublishService.generateCourseHtml(courseId);
+        if (file==null){
+            throw new XueChengPlusException("生成的静态化页面为空");
+        }
+        //上传文件到minio
+        coursePublishService.uploadCourseHtml(courseId,file);
         //任务处理完成更新任务状态
         mqMessageService.completedStageOne(id);
     }
